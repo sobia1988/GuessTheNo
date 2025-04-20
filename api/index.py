@@ -45,4 +45,5 @@ def reset():
     return redirect('/')  # Redirect to home page to restart game
 
 if __name__ == '__main__':
+ if os.environ.get('FLASK_ENV') == 'development':
     app.run(debug=True)
