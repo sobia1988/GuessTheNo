@@ -1,70 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guess the Number Game</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .game-container {
-            text-align: center;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        input[type="number"] {
-            padding: 10px;
-            font-size: 16px;
-            margin: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-        }
-        button:hover {
-            background-color: #218838;
-        }
-        .message {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #333;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Guess the Number Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 40px;
+      text-align: center;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+    }
+    .msg {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
-
-<div class="game-container">
-    <h1>Guess the Number Game</h1>
-    <form method="POST">
-        <input type="number" name="guess" placeholder="Enter a number between 1 and 100" required>
-        <button type="submit">Guess</button>
-    </form>
-
-    <div class="message">
-        {% if message %}
-            <p>{{ message }}</p>
-        {% endif %}
-        {% if attempts %}
-            <p>Number of attempts: {{ attempts }}</p>
-        {% endif %}
-    </div>
-</div>
-
+  <h1>🎲 Guess the Number Game</h1>
+  <form method="POST">
+    <input type="number" name="guess" placeholder="1-100" required />
+    <button type="submit">Guess</button>
+  </form>
+  <div class="msg">{{ message }}</div>
 </body>
 </html>
