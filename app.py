@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session, jsonify
+from flask import Flask, render_template, request, session, jsonify, redirect
 import random
 import os
 
@@ -38,6 +38,11 @@ def guess():
         return jsonify(result=result, game_over=True, guess_count=guess_count)
     else:
         return jsonify(result="Invalid guess. Try again.", guess_count=guess_count)
+
+@app.route('/reset', methods=['GET'])
+def reset():
+    session.clear()  # Clears the session and resets the game
+    return redirect('/')  # Redirect to home page to restart game
 
 if __name__ == '__main__':
     app.run(debug=True)
