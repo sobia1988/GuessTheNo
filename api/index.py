@@ -1,35 +1,38 @@
-from flask import Flask, render_template, request
+
+from flask import Flask, render_template, request, redirect, url_for, session
 import random
-import os
 
 app = Flask(__name__, template_folder='../templates')
-
-rand_bot = random.randint(1, 100)
-guess_count = 0
+app.secret_key = 'your_secret_key'  # Required to use sessions
 
 @app.route("/", methods=["GET", "POST"])
 def home():
-    global guess_count, rand_bot
+    # Start a new game if there's no number in the session
+    if 'rand_bot' not in session:
+        session['rand_bot'] = random.randint(1, 100)  # Random number to guess
+        session['guess_count'] = 0  # Track the number of attempts
+    
     message = ""
+    guess_count = session.get('guess_count', 0)
     
     if request.method == "POST":
         try:
-            user_guess = int(request.form["guess"])
-            guess_count += 1
-            if user_guess < rand_bot:
-                message = f"Try a higher number than {user_guess}!"
-            elif user_guess > rand_bot:
-                message = f"Try a lower number than {user_guess}!"
+            guess = int(request.form["guess"])
+            session['guess_count'] += 1  # Increment guess count
+            
+            # Check if the guess is correct or not
+            if guess > session['rand_bot']:
+                message = f"Please select a number less than {guess}."
+            elif guess < session['rand_bot']:
+                message = f"Please select a number greater than {guess}."
             else:
-                message = f"🎉 Correct! You guessed it in {guess_count} attempts!"
-                with open("guess.txt", "w") as f:
-                    f.write(f"Attempts: {guess_count}")
-                rand_bot = random.randint(1, 100)
-                guess_count = 0
-        except:
-            message = "❌ Please enter a valid number!"
+                message = f"Congratulations! You guessed the correct number in {session['guess_count']} attempts!"
+                session.pop('rand_bot', None)  # Reset the game state after a correct guess
+
+        except ValueError:
+            message = "Please enter a valid number."
     
-    return render_template("index.html", message=message)
+    return render_template("index.html", message=message, guess_count=guess_count)
 
 if __name__ == "__main__":
     app.run(debug=True)
