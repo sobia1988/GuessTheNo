@@ -3,134 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guess The Number Game</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <title>Guess the Number Game</title>
     <style>
-        /* Reset default margins and padding */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* Body styling */
         body {
-            font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
-            padding: 50px;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
         }
-
-        /* Main container */
-        .container {
+        
+        .game-container {
             background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
             padding: 30px;
-            width: 350px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
+            max-width: 400px;
+            width: 100%;
         }
 
-        /* Title styling */
         h1 {
+            color: #333;
             font-size: 24px;
-            margin-bottom: 20px;
-            color: #5e4b8b;
         }
 
-        /* Input box and button styling */
+        p {
+            font-size: 18px;
+            color: #555;
+        }
+
         #userGuess {
             padding: 10px;
+            font-size: 16px;
             width: 80%;
-            margin-bottom: 20px;
+            margin: 10px 0;
             border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
+            border-radius: 4px;
+            outline: none;
+            transition: border-color 0.3s;
         }
 
-        button {
+        #userGuess:focus {
+            border-color: #4CAF50;
+        }
+
+        #guessBtn {
             padding: 10px 20px;
-            width: 85%;
-            background-color: #5e4b8b;
+            background-color: #4CAF50;
             color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #6a5a9e;
-        }
-
-        /* Styling for the attempts and feedback section */
-        .attempts {
             font-size: 18px;
-            margin: 20px 0;
-            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
         }
 
-        #feedback {
+        #guessBtn:hover {
+            background-color: #45a049;
+        }
+
+        #resultMessage {
             font-size: 16px;
-            margin-top: 15px;
-            color: #e74c3c;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #d9534f;
         }
 
-        /* Responsive design for smaller screens */
-        @media (max-width: 400px) {
-            .container {
-                width: 280px;
-            }
-
-            #userGuess, button {
-                width: 100%;
-            }
+        #resultMessage.game-over {
+            color: #5bc0de;
         }
     </style>
 </head>
 <body>
+    <div class="game-container">
+        <h1>Guess the Number Game</h1>
+        <p>Attempts: <span id="guessCount">{{ guess_count }}</span></p>
 
-    <div class="container">
-        <h1>Guess The Number Game</h1>
-        
-        <p class="attempts">Attempts: <span id="attempts">{{ guess_count }}</span></p> <!-- Display attempts -->
-
-        <form id="guessForm">
-            <input type="number" id="userGuess" placeholder="Enter your guess" required>
-            <button type="submit">Guess</button>
-        </form>
-        
-        <p id="feedback"></p>
+        <input type="number" id="userGuess" placeholder="Enter your guess" />
+        <button id="guessBtn">Guess</button>
+        <p id="resultMessage"></p>
     </div>
 
     <script>
-        // Handle form submission
-        $('#guessForm').on('submit', function(event) {
-            event.preventDefault();
+        document.getElementById('guessBtn').addEventListener('click', function() {
+            const userGuess = document.getElementById('userGuess').value;
+            const guessCount = document.getElementById('guessCount').textContent;
 
-            let guess = $('#userGuess').val();
+            // Only allow if there's a valid input
+            if (userGuess === "") {
+                alert("Please enter a number.");
+                return;
+            }
 
-            $.ajax({
-                url: '/guess',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ guess: guess }),
-                success: function(response) {
-                    // Update the feedback message and attempts count
-                    $('#feedback').text(response.result);
-                    $('#attempts').text(response.guess_count);  // Update attempts display
+            fetch('/guess', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ guess: userGuess }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update result and guess count
+                document.getElementById('resultMessage').innerText = data.result;
+                document.getElementById('guessCount').textContent = data.guess_count;
 
-                    // If the game is over, show a new message
-                    if (response.game_over) {
-                        $('#feedback').text(response.result + " Refreshing for a new game...");
-                    }
+                // If the game is over, show an additional message
+                if (data.game_over) {
+                    document.getElementById('resultMessage').innerText = `${data.result} Game Over!`;
+                    document.getElementById('resultMessage').classList.add('game-over');
                 }
-            });
+            })
+            .catch(error => console.error('Error:', error));
         });
     </script>
 </body>
