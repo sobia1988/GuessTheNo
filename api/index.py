@@ -33,6 +33,9 @@ def home():
             message = "Please enter a valid number."
     
     return render_template("index.html", message=message, guess_count=guess_count)
-
+    
 if __name__ == "__main__":
     app.run(debug=True)
+
+with open(r"guess.txt", "w") as file:
+ file.write(str(f"attemps: {{guess_count}}"))
