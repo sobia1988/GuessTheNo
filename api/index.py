@@ -25,6 +25,10 @@ def home():
                 message = f"Please select a number less than {guess}."
             elif guess < session['rand_bot']:
                 message = f"Please select a number greater than {guess}."
+            elif guess < 1:
+                message = f"Kindly select a valid number."
+            elif guess > 100:
+                message = f"Kindly select a valid number."
             else:
                 message = f"Congratulations! You guessed the correct number in {session['guess_count']} attempts!"
                 session.pop('rand_bot', None)  # Reset the game state after a correct guess

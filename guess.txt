@@ -1,1 +1,1 @@
-Attempts: 10
+attemps: {guess_count}
